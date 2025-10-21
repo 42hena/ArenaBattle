@@ -24,11 +24,21 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+	// 케릭터 컨트롤 변경 입력 처리 함수
+	void ChangeCharacterControl();
+
 	// 이동 입력 처리 함수
-	void Move(const struct FInputActionValue& Value);
+	void ShoulderMove(const struct FInputActionValue& Value);
+	void QuaterMove(const struct FInputActionValue& Value);
 
 	// 마우스 회전 입력 처리 함수
-	void Look(const struct FInputActionValue& Value);
+	void ShoulderLook(const struct FInputActionValue& Value);
+
+	// 케릭터 컨트롤 변경할 때 사용할 편의 함수.
+	void SetCharacterControl(ECharacterControlType NewCharacterControlType);
+
+	// 컨트롤 데이터 설정
+	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Camera)
@@ -39,17 +49,22 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
-	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+	TObjectPtr<class UInputAction> ShoulderMoveAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
-	TObjectPtr<class UInputAction> MoveAction;
+	TObjectPtr<class UInputAction> QuaterMoveAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
-	TObjectPtr<class UInputAction> LookAction;
+	TObjectPtr<class UInputAction> ShoulderLookAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
 	TObjectPtr<class UInputAction> JumpAction;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
+	TObjectPtr<class UInputAction> ChangeControlAction;
 
+	UPROPERTY(VisibleAnywhere, Category = CharacterControl, meta = (AllowPrivateAccess = "true"))
+	ECharacterControlType CurrentCharacterType;
 private:
 
 };

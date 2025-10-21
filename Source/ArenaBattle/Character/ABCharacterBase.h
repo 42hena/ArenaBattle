@@ -8,7 +8,7 @@
 
 // 케릭터 컨트롤 타입을 지정하는 열거형
 UENUM()
-enum class EChatacterControlType
+enum class ECharacterControlType
 {
 	ShoulderView,
 	QuaterView
@@ -24,14 +24,12 @@ public:
 	AABCharacterBase();
 
 protected:
-
-
 	// 컨트롤 데이터 설정
-	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData);;
+	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData);
 
 
 protected:
 	// 열거형 타입 - UABCharacterControlData 에셋을 관리하는 맵
 	UPROPERTY(EditAnywhere, Category = CharacterControl, meta = (AllowPirvateAccess = "true"))
-	TMap<EChatacterControlType, class UABCharacterControlData*> CharacterControlManager;
+	TMap<ECharacterControlType, class UABCharacterControlData*> CharacterControlManager;
 };
