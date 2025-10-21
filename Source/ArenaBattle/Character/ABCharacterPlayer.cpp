@@ -79,14 +79,14 @@ AABCharacterPlayer::AABCharacterPlayer()
 		ShoulderMoveAction = ShoulderMoveActionRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> QuaterMoveActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_ShoulderMove.IA_ShoulderMove'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> QuaterMoveActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_QuaterMove.IA_QuaterMove'"));
 	if (QuaterMoveActionRef.Succeeded())
 	{
 		QuaterMoveAction = QuaterMoveActionRef.Object;
 	}
 
 	// Input의 LookAction 설정
-	static ConstructorHelpers::FObjectFinder<UInputAction> ShoulderLookActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_Look.IA_Look'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> ShoulderLookActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_ShoulderLook.IA_ShoulderLook'"));
 	if (ShoulderLookActionRef.Succeeded())
 	{
 		ShoulderLookAction = ShoulderLookActionRef.Object;
@@ -243,6 +243,7 @@ void AABCharacterPlayer::SetCharacterControl(ECharacterControlType NewCharacterC
 			InputSystem->AddMappingContext(NewCharacterControl->InputMappingContext, 0);
 		}
 	}
+	CurrentCharacterType = NewCharacterControlType;
 }
 
 // 컨트롤 데이터 설정.
