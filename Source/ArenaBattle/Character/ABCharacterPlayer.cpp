@@ -10,6 +10,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
+#include "InputMappingContext.h"
+#include "InputAction.h"
+
 
 AABCharacterPlayer::AABCharacterPlayer()
 {
@@ -60,6 +63,36 @@ AABCharacterPlayer::AABCharacterPlayer()
 	
 	// Camera 설정.
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+
+	// [입력 설정]
+	// Input Mapping Context 설정
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/ArenaBattle/Input/IMC_Default.IMC_Default'"));
+	if (DefaultMappingContextRef.Succeeded())
+	{
+		DefaultMappingContext = DefaultMappingContextRef.Object;
+	}
+
+	// Input의 MoveAction 설정
+	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_Move.IA_Move'"));
+	if (MoveActionRef.Succeeded())
+	{
+		MoveAction = MoveActionRef.Object;
+	}
+
+	// Input의 LookAction 설정
+	static ConstructorHelpers::FObjectFinder<UInputAction> LookActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_Look.IA_Look'"));
+	if (LookActionRef.Succeeded())
+	{
+		LookAction = LookActionRef.Object;
+	}
+
+	// Input의 JumpAction 설정
+	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_Jump.IA_Jump'"));
+	if (JumpActionRef.Succeeded())
+	{
+		JumpAction = JumpActionRef.Object;
+	}
 }
 
 void AABCharacterPlayer::BeginPlay()

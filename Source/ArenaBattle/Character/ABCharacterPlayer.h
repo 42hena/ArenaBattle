@@ -37,6 +37,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UCameraComponent> Camera;
 
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
+	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
+	TObjectPtr<class UInputAction> MoveAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
+	TObjectPtr<class UInputAction> LookAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
+	TObjectPtr<class UInputAction> JumpAction;
+
 private:
 
 };
