@@ -99,7 +99,7 @@ AABCharacterPlayer::AABCharacterPlayer()
 		JumpAction = JumpActionRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> ChangeControlActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_ChnageControl.IA_ChnageControl'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> ChangeControlActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArenaBattle/Input/Actions/IA_ChangeControl.IA_ChangeControl'"));
 	if (ChangeControlActionRef.Succeeded())
 	{
 		ChangeControlAction = ChangeControlActionRef.Object;
