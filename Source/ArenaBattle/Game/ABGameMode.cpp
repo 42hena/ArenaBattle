@@ -20,8 +20,8 @@ AABGameMode::AABGameMode()
 
 	// 이미 클래스이기 떄문에 _C는 안붙임. 타입이 Class가아니면 붙임.
 	// "/Script/CoreUObject.Class'/Script/ArenaBattle.ABPlayerController'" .Class라 되어있네?
-	// static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABPlayerController'"));
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/Engine.Blueprint'/Game/ThirdPerson/Blueprints/BP_ThirdPersonPlayerController.BP_ThirdPersonPlayerController_C'"));
+	// static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/Engine.Blueprint'/Game/ThirdPerson/Blueprints/BP_ThirdPersonPlayerController.BP_ThirdPersonPlayerController_C'"));
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABPlayerController'"));
 	if (PlayerControllerClassRef.Succeeded())
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
