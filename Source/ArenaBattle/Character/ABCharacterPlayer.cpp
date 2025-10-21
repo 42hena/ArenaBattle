@@ -157,7 +157,6 @@ void AABCharacterPlayer::Move(const FInputActionValue& Value)
 	// 입력 값 읽어오기
 	FVector2D Movement= Value.Get<FVector2D>();
 	
-
 	// 이동할 방향 만들기
 	// 카메라가 바라보는 방향(컨트롤러의 방향)을 기준으로 이동 방향 만들기.
 	FRotator Rotation = GetControlRotation();
@@ -178,6 +177,14 @@ void AABCharacterPlayer::Move(const FInputActionValue& Value)
 void AABCharacterPlayer::Look(const FInputActionValue& Value)
 {
 	// 입력 값 읽어오기
+	FVector2D LookValue = Value.Get<FVector2D>();
 
+	UE_LOG(LogTemp, Log, TEXT("Look Test"));
 	// 컨트롤러에 회전 적용.
+
+	// 마우스 좌우 드래그 입력을 컨트롤러 Z축 회전(Yaw)에 적용
+	AddControllerYawInput(LookValue.X);
+
+	// 마우스 상하 드래그 입력을 컨트롤러 Y축 회전(피치)에 적용
+	AddControllerPitchInput(-LookValue.Y);
 }
