@@ -13,6 +13,11 @@
 #include "InputMappingContext.h"
 #include "InputAction.h"
 
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+
+#include "InputActionValue.h"
+
 
 AABCharacterPlayer::AABCharacterPlayer()
 {
@@ -98,19 +103,81 @@ AABCharacterPlayer::AABCharacterPlayer()
 void AABCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// 향상된 입력 시스템 객체 얻어오기
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (IsValid(PlayerController))	// if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+
+		// 사용할 입력 매핑 컨텍스트 등록.
+		if (InputSystem)
+		{
+			InputSystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+
+	// 공식 문서
+	/*if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (!DefaultMappingContext)
+			{
+				InputSystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+		}
+	}*/
+
 }
 
 void AABCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// 
+	// 해당하는 Action에 함수를 Bind하기.
+	
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (EnhancedInputComponent)
+	{
+		// 입력 바인딩(연결).
+
+		// 우리가 만든 함수 매핑
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::Move);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::Look);
+
+		// UE에서 만들어진 함수 매핑
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+	}
 }
 
 void AABCharacterPlayer::Move(const FInputActionValue& Value)
 {
+	// 입력 값 읽어오기
+	FVector2D Movement= Value.Get<FVector2D>();
+	
+
+	// 이동할 방향 만들기
+	// 카메라가 바라보는 방향(컨트롤러의 방향)을 기준으로 이동 방향 만들기.
+	FRotator Rotation = GetControlRotation();
+	FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// (Pitch, Yaw, Roll)
+
+	// 앞 방향 
+	FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	// 오른쪽 방향
+	FVector RightVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	// movement에 입력 전달하기.
+	// 크기가 1인 숫자를 곱하는 행위는 "회전"을 의미!!!
+	AddMovementInput(ForwardVector, Movement.Y);
+	AddMovementInput(RightVector, Movement.X);
+
 }
 
 void AABCharacterPlayer::Look(const FInputActionValue& Value)
 {
+	// 입력 값 읽어오기
+
+	// 컨트롤러에 회전 적용.
 }
