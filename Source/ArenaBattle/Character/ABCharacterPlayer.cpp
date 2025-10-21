@@ -188,29 +188,29 @@ void AABCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 
 	// 이동할 방향 만들기
 	// 카메라가 바라보는 방향(컨트롤러의 방향)을 기준으로 이동 방향 만들기.
-	FRotator Rotation = GetControlRotation();
-	FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);	// (Pitch, Yaw, Roll)
+	FVector MoveDirection(Movement.Y, Movement.X, 0.0f);	// 입력은 상하가 y 언리얼은 X...
 
-	// 앞 방향 
-	FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	// 오른쪽 방향
-	FVector RightVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	// 입력의 크기
+	float MovementVectorSize = Movement.Size();
+	UE_LOG(LogTemp, Log, TEXT("Vec:%f %f"), MovementVectorSize, 1.0f);
 
-	// movement에 입력 전달하기.
-	// 크기가 1인 숫자를 곱하는 행위는 "회전"을 의미!!!
-	AddMovementInput(ForwardVector, Movement.Y);
-	AddMovementInput(RightVector, Movement.X);
+	// 이동 단위 벡터 만들기.
+	MoveDirection = MoveDirection.GetSafeNormal();
 
+	// 케릭터가 이동하는 방향에 맞게 컨트롤러 회전 설정.
+	Controller->SetControlRotation(
+		FRotationMatrix::MakeFromX(MoveDirection).Rotator()
+	);
+
+	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
 void AABCharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 {
 	// 입력 값 읽어오기
 	FVector2D LookValue = Value.Get<FVector2D>();
-
-	UE_LOG(LogTemp, Log, TEXT("Look Test"));
+	
 	// 컨트롤러에 회전 적용.
-
 	// 마우스 좌우 드래그 입력을 컨트롤러 Z축 회전(Yaw)에 적용
 	AddControllerYawInput(LookValue.X);
 
