@@ -38,7 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	FVector Velocity;
 
-	// 이동 속력(빠르기)
+	// 이동 속력(빠르기) -> 블랜드 스페이스에서 사용할 값.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	float GroundSpeed;
 
