@@ -27,6 +27,13 @@ AABCharacterBase::AABCharacterBase()
 	{
 		CharacterControlManager.Add(ECharacterControlType::QuaterView, QuaterDataRef.Object);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+		ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_ComboAttack.AM_ComboAttack'"));
+	if (ComboActionMontageRef.Object)
+	{
+		ComboActionMontage = ComboActionMontageRef.Object;
+	}
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* InCharacterControlData)
@@ -38,4 +45,10 @@ void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* In
 	GetCharacterMovement()->bOrientRotationToMovement = InCharacterControlData->bOrientRotationToMovement;
 	GetCharacterMovement()->bUseControllerDesiredRotation = InCharacterControlData->bUseControllerDesiredRotation;
 	GetCharacterMovement()->RotationRate = InCharacterControlData->RotationRate;
+}
+
+void AABCharacterBase::ComboActionEnd(UAnimMontage* TargetMontage, bool Interrupted)
+{
+	// 몽타주 재생 끝나면 다시 무브먼트 모드 복구.
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }

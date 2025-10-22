@@ -27,9 +27,16 @@ protected:
 	// 컨트롤 데이터 설정
 	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData);
 
+public:
+	// 콤보 공격이 끝날 때 실행되는 함수
+	void ComboActionEnd(UAnimMontage* TargetMontage, bool Interrupted);
+
 
 protected:
 	// 열거형 타입 - UABCharacterControlData 에셋을 관리하는 맵
 	UPROPERTY(EditAnywhere, Category = CharacterControl, meta = (AllowPirvateAccess = "true"))
 	TMap<ECharacterControlType, class UABCharacterControlData*> CharacterControlManager;
+
+	UPROPERTY(VisibleAnywhere, Category = CharacterControl, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> ComboActionMontage;
 };

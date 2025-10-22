@@ -10,6 +10,9 @@ UABAnimInstance::UABAnimInstance()
 {
 	// 이동을 판단할 때 사용할 기준 값 설정.
 	MovingThreshold = 3.0f;
+
+	// 점프 중인지 판단할 기준 값 설정
+	JumpingThreshold = 100.0f;
 }
 
 void UABAnimInstance::NativeInitializeAnimation()
@@ -38,5 +41,11 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		// 이동 / 정지 상태 설정
 		bIsIdle = GroundSpeed < MovingThreshold;
+
+		// 공중에 떠있는지 확인(Movement를 통해)
+		bIsFalling = Movement->IsFalling();
+
+		// 점프 중인지 판단 (Z의 속도가 기준점보다 높으면 된다.)
+		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshold);
 	}
 }

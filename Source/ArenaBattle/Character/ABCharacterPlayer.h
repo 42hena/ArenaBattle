@@ -37,6 +37,9 @@ protected:
 	// 케릭터 컨트롤 변경할 때 사용할 편의 함수.
 	void SetCharacterControl(ECharacterControlType NewCharacterControlType);
 
+	// 공격 입력에 대응되는 함수.
+	void Attack();
+
 	// 컨트롤 데이터 설정
 	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData) override;
 
@@ -59,12 +62,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
 	TObjectPtr<class UInputAction> JumpAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
+	TObjectPtr<class UInputAction> AttackAction;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Input)
 	TObjectPtr<class UInputAction> ChangeControlAction;
 
 	UPROPERTY(VisibleAnywhere, Category = CharacterControl, meta = (AllowPrivateAccess = "true"))
 	ECharacterControlType CurrentCharacterType;
+
 private:
 
 };

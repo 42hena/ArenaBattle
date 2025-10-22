@@ -137,9 +137,10 @@ void AABCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// UE에서 만들어진 함수 매핑
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		
+
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABCharacterPlayer::Attack);		
 	}
-	
+
 }
 
 void AABCharacterPlayer::ChangeCharacterControl()
@@ -259,4 +260,27 @@ void AABCharacterPlayer::SetCharacterControlData(const UABCharacterControlData* 
 	SpringArm->bInheritPitch = InCharacterControlData->bInheritPitch;
 	SpringArm->bInheritYaw = InCharacterControlData->bInheritYaw;
 	SpringArm->bInheritRoll = InCharacterControlData->bInheritRoll;
+}
+
+
+void AABCharacterPlayer::Attack()
+{
+	// 이동 막기(무브먼트 모드를 None으로 설정)
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+	// 몽타주 재생.
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		const float AttackSpeedRate = 1.0f;
+		// Montage 재생 함수.
+		 AnimInstance->Montage_Play(ComboActionMontage);
+
+		// 몽타주 재생이 끝나면 특정 함수 실행
+		FOnMontageEnded OnMontageEnded;
+		OnMontageEnded.BindUObject(this, &AABCharacterBase::ComboActionEnd);
+		AnimInstance->Montage_SetEndDelegate(OnMontageEnded, ComboActionMontage);
+
+	}
+
 }
