@@ -27,7 +27,13 @@ protected:
 	// 컨트롤 데이터 설정
 	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData);
 
-public:
+protected:	// Combo Section
+	// 공격 처음 시작할 때와 콤보 액션을 진행할 때 실행.
+	void ProcessComboCommand();
+
+	// 콤보 액션이 시작될 때 실행.
+	void ComboActionBegin();
+
 	// 콤보 공격이 끝날 때 실행되는 함수
 	void ComboActionEnd(UAnimMontage* TargetMontage, bool Interrupted);
 

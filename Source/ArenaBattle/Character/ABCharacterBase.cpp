@@ -47,6 +47,31 @@ void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* In
 	GetCharacterMovement()->RotationRate = InCharacterControlData->RotationRate;
 }
 
+void AABCharacterBase::ProcessComboCommand()
+{
+	// 이동 막기(무브먼트 모드를 None으로 설정)
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+	// 몽타주 재생.
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		const float AttackSpeedRate = 1.0f;
+		// Montage 재생 함수.
+		AnimInstance->Montage_Play(ComboActionMontage);
+
+		// 몽타주 재생이 끝나면 특정 함수 실행
+		FOnMontageEnded OnMontageEnded;
+		OnMontageEnded.BindUObject(this, &AABCharacterBase::ComboActionEnd);
+		AnimInstance->Montage_SetEndDelegate(OnMontageEnded, ComboActionMontage);
+
+	}
+}
+
+void AABCharacterBase::ComboActionBegin()
+{
+}
+
 void AABCharacterBase::ComboActionEnd(UAnimMontage* TargetMontage, bool Interrupted)
 {
 	// 몽타주 재생 끝나면 다시 무브먼트 모드 복구.
