@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interface/ABAnimationAttackInterface.h"
 #include "ABCharacterBase.generated.h"
+
 
 // 케릭터 컨트롤 타입을 지정하는 열거형
 UENUM()
@@ -15,7 +17,9 @@ enum class ECharacterControlType
 };
 
 UCLASS()
-class ARENABATTLE_API AABCharacterBase : public ACharacter
+class ARENABATTLE_API AABCharacterBase : 
+	public ACharacter,
+	public IABAnimationAttackInterface
 {
 	GENERATED_BODY()
 
@@ -45,6 +49,22 @@ protected:	// Combo Section
 	// 이 시간 전에 공격 입력이 제대로 들어왔는지 판단 후 콤보 처리 분기.
 	void ComboCheck();
 
+	// 애님 노티파이 기반으로 충돌 판정하는 목적으로 사용.
+	virtual void AttackHitCheck() override;
+
+	virtual float TakeDamage(float DamageAmount, 
+		struct FDamageEvent const& DamageEvent, 
+		class AController* EventInstigator, 
+		AActor* DamageCauser) override;
+
+	// 죽음 설정 함수.
+	// 데미지 처리 후 체력 소진되면 죽음.
+	// 죽음 상태 설정.
+	virtual void SetDead();
+
+	// 죽음 애니메이션 재생.
+	void PlayDeadAnimation();
+
 protected:
 	// 열거형 타입 - UABCharacterControlData 에셋을 관리하는 맵
 	UPROPERTY(EditAnywhere, Category = CharacterControl, meta = (AllowPirvateAccess = "true"))
@@ -66,5 +86,9 @@ protected:
 
 	// 콤보 점프를 판정할 때 사용할 Boolean 변수
 	UPROPERTY(VisibleAnywhere, Category = CharacterControl, meta = (AllowPrivateAccess = "true"))
-	bool bHasNextComboCommand = false;	// uint8 bHasNextComboCommand : 1 = false;
+	bool bHasNextComboCommand = false;
+	// uint8 bHasNextComboCommand : 1 = false;
+
+	UPROPERTY(VisibleAnywhere, Category = CharacterControl, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> DeadMontage;
 };
