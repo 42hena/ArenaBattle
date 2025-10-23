@@ -199,7 +199,6 @@ void AABCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 
 	// 입력의 크기
 	float MovementVectorSize = Movement.Size();
-	UE_LOG(LogTemp, Log, TEXT("Vec:%f %f"), MovementVectorSize, 1.0f);
 
 	// 이동 단위 벡터 만들기.
 	MoveDirection = MoveDirection.GetSafeNormal();
@@ -271,5 +270,6 @@ void AABCharacterPlayer::SetCharacterControlData(const UABCharacterControlData* 
 
 void AABCharacterPlayer::Attack()
 {
+	UE_LOG(LogTemp, Log, TEXT("Attack"));
 	ProcessComboCommand();
 }
