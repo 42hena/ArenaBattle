@@ -91,4 +91,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = CharacterControl, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> DeadMontage;
+
+	// 죽은 뒤에 대기할 시간(이 시간 이후에 캐릭터 삭제)
+	float DeadEventDelayTime = 5.0f;
+
+protected:// Stat
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,  Category = Stat, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UABCharacterStatComponent> Stat;
+
+	// 위젯 섹션
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UWidgetComponent> HpBar;
 };

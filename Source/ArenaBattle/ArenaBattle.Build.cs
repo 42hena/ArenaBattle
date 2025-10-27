@@ -8,7 +8,11 @@ public class ArenaBattle : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
+		// Default
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+
+		// 최근에 추가한 것.
+		PublicDependencyModuleNames.AddRange(new string[] { "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

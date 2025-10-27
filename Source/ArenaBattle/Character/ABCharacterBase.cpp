@@ -12,6 +12,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 
+#include "CharacterStat/ABCharacterStatComponent.h"
+#include "Components/WidgetComponent.h"
+
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
@@ -61,6 +64,33 @@ AABCharacterBase::AABCharacterBase()
 	{
 		DeadMontage = DeadMontageRef.Object;
 	}
+
+	// Stat 컴포넌트 (Actor 컴포넌트라서 계층 지정 필요 없음.)
+	Stat = CreateDefaultSubobject<UABCharacterStatComponent>(TEXT("Stat"));
+
+	// Widget 컴포넌트 (Scene 컴포넌트라서 Root 지정 필요)
+	HpBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	HpBar->SetupAttachment(GetMesh());
+
+	// 위치 조정.
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 200.0f));
+
+	// 어떤 WidgetBlueprint를 사용해 그릴지 지정.
+	static ConstructorHelpers::FClassFinder<UUserWidget>HPBarWidgetRef(TEXT("/Game/ArenaBattle/UI/WBP_HpBar.WBP_HpBar_C"));
+	if (HPBarWidgetRef.Class)
+	{
+		// 컴포넌트에서 사용할 위젯 클래스 설정.
+		HpBar->SetWidgetClass(HPBarWidgetRef.Class);
+
+		// 위젯을 그릴 공간 지정.
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);	// BP에서는 world로 했고, billboard? 로 했음.
+
+		HpBar->SetDrawSize(FVector2D(150.0f, 15.0f));
+
+		// 충돌할 이유 없음.
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* InCharacterControlData)
@@ -231,7 +261,7 @@ void AABCharacterBase::AttackHitCheck()
 	}
 
 
-#if ENABLE_DRAW_
+//#if ENABLE_DRAW
 
 	// 캡슐의 중심 위치.
 	FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
@@ -250,7 +280,7 @@ void AABCharacterBase::AttackHitCheck()
 		CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
 		DrawColor, false, 5.0f
 	);
-#endif
+//#endif
 }
 
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
