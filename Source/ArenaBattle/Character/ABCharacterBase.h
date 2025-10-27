@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interface/ABAnimationAttackInterface.h"
+#include "Interface/ABCharacterWidgetInterface.h"
+#include "Interface/ABCharacterItemInterface.h"
 #include "ABCharacterBase.generated.h"
 
 
@@ -19,7 +21,9 @@ enum class ECharacterControlType
 UCLASS()
 class ARENABATTLE_API AABCharacterBase : 
 	public ACharacter,
-	public IABAnimationAttackInterface
+	public IABAnimationAttackInterface,
+	public IABCharacterWidgetInterface,
+	public IABCharacterItemInterface
 {
 	GENERATED_BODY()
 
@@ -51,6 +55,15 @@ protected:	// Combo Section
 
 	// 애님 노티파이 기반으로 충돌 판정하는 목적으로 사용.
 	virtual void AttackHitCheck() override;
+
+
+	// IABCharacterWidgetInterface 함수 구현
+	// Widget에서 캐릭터에 설정 요청할 때 사용.
+	virtual void SetupCharacterWidget(class UABUserWidget* InUserWidget) override;
+
+	// 컴포넌트 초기화가 끝나면 호출되는 이벤트 함수.
+	virtual void PostInitializeComponents() override;
+
 
 	virtual float TakeDamage(float DamageAmount, 
 		struct FDamageEvent const& DamageEvent, 
@@ -102,5 +115,9 @@ protected:// Stat
 	// 위젯 섹션
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UWidgetComponent> HpBar;
+	TObjectPtr<class UABWidgetComponent> HpBar;
+	/*TObjectPtr<class UWidgetComponent> HpBar;*/
+
+	virtual void TakeItem(class UABItemData* InItemData) override;
+	
 };

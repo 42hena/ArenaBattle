@@ -14,6 +14,10 @@
 
 #include "CharacterStat/ABCharacterStatComponent.h"
 #include "Components/WidgetComponent.h"
+#include "UI/ABWidgetComponent.h"
+
+#include "UI/ABHpBarWidget.h"
+#include "Item/ABItemData.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -69,7 +73,8 @@ AABCharacterBase::AABCharacterBase()
 	Stat = CreateDefaultSubobject<UABCharacterStatComponent>(TEXT("Stat"));
 
 	// Widget 컴포넌트 (Scene 컴포넌트라서 Root 지정 필요)
-	HpBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	//HpBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	HpBar = CreateDefaultSubobject<UABWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
 
 	// 위치 조정.
@@ -283,12 +288,37 @@ void AABCharacterBase::AttackHitCheck()
 //#endif
 }
 
+void AABCharacterBase::SetupCharacterWidget(UABUserWidget* InUserWidget)
+{
+	// 초기 값 설정 및 델리게이트 연결.
+	UABHpBarWidget* HpBarWidget = Cast<UABHpBarWidget>(InUserWidget);
+	if (HpBarWidget)
+	{
+		// 스탯 데이터의 기반으로 위젯에 값 설정.
+		HpBarWidget->SetMaxHp(Stat->GetMaxHp());
+		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
+
+		// 델리게이트 연결
+		Stat->OnHpChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateHpBar);
+	}
+}
+
+void AABCharacterBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// 체력을 모두 소진했을 때 발행되는 델리게이트에 구독
+	Stat->OnHpZero.AddUObject(this, &AABCharacterBase::SetDead);
+}
+
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	// @Test : 바로 죽음 처리.
-	SetDead();
+	//SetDead();
+	Stat->ApplyDamage(DamageAmount);
+
 
 	return AppliedDamage;
 }
@@ -303,6 +333,9 @@ void AABCharacterBase::SetDead()
 
 	// 콜리전 끄기.
 	SetActorEnableCollision(false);
+
+	// 죽으면 HpBar 사라지도록 처리.
+	HpBar->SetHiddenInGame(true);
 }
 
 void AABCharacterBase::PlayDeadAnimation()
@@ -316,4 +349,9 @@ void AABCharacterBase::PlayDeadAnimation()
 		const float PlayRate = 1.0f;
 		AnimInstance->Montage_Play(DeadMontage, 1.0f);
 	}
+}
+
+void AABCharacterBase::TakeItem(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("ITem 습득: 타입:%d"), (uint8)InItemData->Type);
 }
