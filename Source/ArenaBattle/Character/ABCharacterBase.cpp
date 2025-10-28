@@ -18,6 +18,7 @@
 
 #include "UI/ABHpBarWidget.h"
 #include "Item/ABItemData.h"
+#include "Item/ABWeaponItemData.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -96,6 +97,18 @@ AABCharacterBase::AABCharacterBase()
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
+
+#pragma region ItemSection
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::EquipWeapon));
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::DrinkPotion));
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::ReadScroll));
+#pragma endregion
+
+#pragma region WeaponComponent
+	// Weapon Component
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
+#pragma endregion
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* InCharacterControlData)
@@ -353,5 +366,68 @@ void AABCharacterBase::PlayDeadAnimation()
 
 void AABCharacterBase::TakeItem(UABItemData* InItemData)
 {
-	UE_LOG(LogTemp, Log, TEXT("ITem 습득: 타입:%d"), (uint8)InItemData->Type);
+	//UE_LOG(LogTemp, Log, TEXT("ITem 습득: 타입:%d"), (uint8)InItemData->Type);
+
+	// 3가지 종류의 아이템에 따라 처리를 분기
+	/*switch (InItemData->Type)
+	{
+	case EItemType::Weapon:
+		EquipWeapon(InItemData);
+		break;
+
+	case EItemType::Potion:
+		DrinkPotion(InItemData);
+		break;
+
+	case EItemType::Scroll:
+		ReadScroll(InItemData);
+		break;
+
+	default:
+		break;
+	}*/
+
+	if (InItemData)
+	{
+		// 타입 별로 인덱스 구하기
+		uint8 Index = (uint8)InItemData->Type;
+
+		// 호출할 델리게이트 가져오기
+		FOnTakeItemDelegate Delegate = TakeItemActions[Index].ItemDelegate;
+
+		// 델리게이트 호출.
+		Delegate.ExecuteIfBound(InItemData);
+	}
+}
+
+void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
+{
+	//UE_LOG(LogTemp, Log, TEXT("EquipWeapon"));
+	UABWeaponItemData* WeaponItemData = Cast<UABWeaponItemData>(InItemData);
+	if (WeaponItemData)
+	{
+		// 무기 메시가 이미 로드 됐는지 확인.
+		if (WeaponItemData->WeaponMesh.IsPending())
+		{
+			WeaponItemData->WeaponMesh.LoadSynchronous();
+			// Async로 가능하긴 함.
+		}
+
+		// 강참조 방식
+		//Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh);
+
+		// 로그가 완료 시 메시 설정.
+		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh.Get());
+
+	}
+}
+
+void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("DrinkPotion"));
+}
+
+void AABCharacterBase::ReadScroll(UABItemData* InItemData)
+{
+	UE_LOG(LogTemp, Log, TEXT("ReadScroll"));
 }

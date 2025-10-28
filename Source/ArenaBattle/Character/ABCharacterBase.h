@@ -18,6 +18,22 @@ enum class ECharacterControlType
 	QuaterView
 };
 
+
+DECLARE_DELEGATE_OneParam(FOnTakeItemDelegate, class UABItemData* /* InItemData */);
+
+USTRUCT(BlueprintType)
+struct FTakeItemDelegateWrapper
+{
+	GENERATED_BODY()
+
+	FTakeItemDelegateWrapper() {}
+	FTakeItemDelegateWrapper(const FOnTakeItemDelegate& InItemDelegate):
+		ItemDelegate(InItemDelegate)
+	{}
+
+	FOnTakeItemDelegate ItemDelegate;
+};
+
 UCLASS()
 class ARENABATTLE_API AABCharacterBase : 
 	public ACharacter,
@@ -120,4 +136,17 @@ protected:
 
 	virtual void TakeItem(class UABItemData* InItemData) override;
 	
+
+protected:	// Item Section
+	virtual void EquipWeapon(class UABItemData* InItemData);
+	virtual void DrinkPotion(class UABItemData* InItemData);
+	virtual void ReadScroll(class UABItemData* InItemData);
+
+	UPROPERTY()
+	//TArray<FOnTakeItemDelegate> TakeItemActions;
+	TArray<FTakeItemDelegateWrapper> TakeItemActions;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USkeletalMeshComponent> Weapon;
 };
