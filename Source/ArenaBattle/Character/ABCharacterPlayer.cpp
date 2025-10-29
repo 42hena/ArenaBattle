@@ -38,23 +38,23 @@ AABCharacterPlayer::AABCharacterPlayer()
 	// GetCapsuleComponent()->SetRelativeLocationAndRotation(FVector(), FRotator());
 
 	// 매시 컴포넌트 설정
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
+	//GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 
-	// 애샛 지정
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Warrior.SK_CharM_Warrior'"));
-	if (CharacterMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
-	}
+	//// 애샛 지정
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Warrior.SK_CharM_Warrior'"));
+	//if (CharacterMeshRef.Object)
+	//{
+	//	GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
+	//}
 
-	// Animation 지정
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimRef(TEXT("/Script/Engine.AnimBlueprint'/Game/ArenaBattle/Animation/ABP_ABCharacter.ABP_ABCharacter_C'"));
-	if (AnimRef.Class)
-	{
-		// 삭제되었음.
-		//GetMesh()->SetAnimClass(AnimRef.Class);
-		GetMesh()->SetAnimInstanceClass(AnimRef.Class);
-	}
+	//// Animation 지정
+	//static ConstructorHelpers::FClassFinder<UAnimInstance> AnimRef(TEXT("/Script/Engine.AnimBlueprint'/Game/ArenaBattle/Animation/ABP_ABCharacter.ABP_ABCharacter_C'"));
+	//if (AnimRef.Class)
+	//{
+	//	// 삭제되었음.
+	//	//GetMesh()->SetAnimClass(AnimRef.Class);
+	//	GetMesh()->SetAnimInstanceClass(AnimRef.Class);
+	//}
 
 	// SpringArm 컴포넌트 생성
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));

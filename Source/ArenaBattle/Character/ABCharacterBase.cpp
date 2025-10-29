@@ -32,6 +32,24 @@ AABCharacterBase::AABCharacterBase()
 	// 메시의 콜리전은 NoCollision으로 설정.
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 
+	// 애샛 지정
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Warrior.SK_CharM_Warrior'"));
+	if (CharacterMeshRef.Object)
+	{
+		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
+	}
+
+	// Animation 지정
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimRef(TEXT("/Script/Engine.AnimBlueprint'/Game/ArenaBattle/Animation/ABP_ABCharacter.ABP_ABCharacter_C'"));
+	if (AnimRef.Class)
+	{
+		// 삭제되었음.
+		//GetMesh()->SetAnimClass(AnimRef.Class);
+		GetMesh()->SetAnimInstanceClass(AnimRef.Class);
+	}
+
 	// Map에 데이터 넣기
 	// 케릭터 컨트롤 데이터 에셋 검색 후 설정
 	static ConstructorHelpers::FObjectFinder<UABCharacterControlData>
@@ -109,6 +127,8 @@ AABCharacterBase::AABCharacterBase()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 #pragma endregion
+
+
 }
 
 void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* InCharacterControlData)

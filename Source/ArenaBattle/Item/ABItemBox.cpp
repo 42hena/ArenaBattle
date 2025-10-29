@@ -7,7 +7,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Physics/ABCollision.h"
-#include "Interface/ABCharacterItemInterface.h"	// TODO->
+#include "Interface/ABCharacterItemInterface.h"
+#include "Engine/AssetManager.h"
+#include "ABItemData.h"
 
 // Sets default values
 AABItemBox::AABItemBox()
@@ -54,6 +56,42 @@ AABItemBox::AABItemBox()
 		Effect->bAutoActivate = false;
 	}
 
+}
+
+void AABItemBox::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// 랜덤으로 아이템 데이터를 설정.
+	UAssetManager& Manager = UAssetManager::Get();
+
+	// 애샛 매니저에서 ABItemData 타입으로 애셋 목록 가져오기.
+	TArray<FPrimaryAssetId> Results;
+	Manager.GetPrimaryAssetIdList(TEXT("ABItemData"), Results);
+
+	// 결과 확인(예외 처리).
+	ensureAlways(Results.Num() > 0);
+
+	// 랜덤 인덱스.
+	int32 RandomIndex = FMath::RandRange(0, Results.Num() - 1);
+
+	// 애셋 경로 가져오기.
+	FSoftObjectPath AssetPath = Manager.GetPrimaryAssetPath(Results[RandomIndex]);
+
+	// 로드를 위한 소프트 참조 생성.
+	FSoftObjectPtr AssetToLoad(AssetPath);
+
+	// 로드 처리
+	if (AssetToLoad.IsPending())
+	{
+		AssetToLoad.LoadSynchronous();
+	}
+
+	// 로드한 애셋을 아이템에 설정.
+	Item = Cast<UABItemData>(AssetToLoad.Get());
+
+	// 제대로 설정됐는지 확인.
+	ensureAlways(Item);
 }
 
 void AABItemBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

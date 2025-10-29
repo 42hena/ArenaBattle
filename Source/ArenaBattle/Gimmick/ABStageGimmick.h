@@ -118,4 +118,27 @@ protected:
 	UFUNCTION()
 	void OnOppoenentDestroyed(AActor* DestroyedActor);
 #pragma endregion
+
+#pragma region RewardSection
+protected:
+	// ItemBox 클래스
+	UPROPERTY(EditAnywhere, Category = Reward, Meta = (AllowPrivateAccess="true"))
+	TSubclassOf<class AABItemBox> RewardBoxClass;
+
+	// 보상 상자 관리
+	// 4개의 생성된 아이템 상자의 충돌 처리 및 정리를 위해
+	// TObjectPtr는 강참조
+	// 하지만 아이템 상자는 스테이지와 무관함 -> 따라서 약참조가 좋음.
+	UPROPERTY(VisibleAnywhere, Category = Reward, Meta = (AllowPrivateAccess = "true"))
+	TArray<TWeakObjectPtr<class AABItemBox>> RewardBoxes;	// Get을 통해 가져와야 함.
+
+	// 생성 위치 저장용
+	TMap<FName, FVector> RewardBoxLocations;
+
+	// 아이템 상자와 오버랩할 떄 호출할 함수.
+	UFUNCTION()
+	void OnRewardTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void SpawnRewardBoxes();
+#pragma endregion
 };
