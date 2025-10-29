@@ -74,6 +74,7 @@ void AABItemBox::PostInitializeComponents()
 
 	// 랜덤 인덱스.
 	int32 RandomIndex = FMath::RandRange(0, Results.Num() - 1);
+	UE_LOG(LogTemp, Log, TEXT("인덱스 체크: %d"), RandomIndex);
 
 	// 애셋 경로 가져오기.
 	FSoftObjectPath AssetPath = Manager.GetPrimaryAssetPath(Results[RandomIndex]);
