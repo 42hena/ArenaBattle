@@ -141,4 +141,17 @@ protected:
 
 	void SpawnRewardBoxes();
 #pragma endregion
+
+#pragma region StageStatSection
+public:
+	// CurrentStageNum에 대한 Getter / Setter
+	FORCEINLINE void SetStageNum(int32 NewStageNum) { CurrentStageNum = NewStageNum; }
+	FORCEINLINE int32 GetStageNum() const { return CurrentStageNum; }
+
+protected:
+	// 스테이트 순번을 레벨 값으로 관리.
+	UPROPERTY(VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	int32 CurrentStageNum;
+#pragma endregion
+
 };

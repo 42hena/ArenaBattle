@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include "GameData/ABCharacterStat.h"
+
 #include "ABCharacterStatComponent.generated.h"
 
 // 체력 변경 관련 이벤트를 알리기 위한 델리게이트.
@@ -27,7 +30,16 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	FORCEINLINE float GetMaxHp() const { return MaxHp; }
+	// FORCEINLINE float GetMaxHp() const { return MaxHp; }
+	void SetLevelStat(int32 InNewLevel);
+	FORCEINLINE int32 GetCurrentLevel() const { return CurrentLevel; }
+	FORCEINLINE void SetModifierStat(const FABCharacterStat& InModifierStat)
+	{
+		ModifierStat = InModifierStat;
+	}
+	FORCEINLINE FABCharacterStat GetTotalStat() const { return FABCharacterStat(BaseStat + ModifierStat); }
+
+
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 
 	// 대미지 적용 함수
@@ -44,10 +56,23 @@ public:
 
 protected:
 	// 최대 체력
-	UPROPERTY(VisibleInstanceOnly, Category = Stat)
-	float MaxHp;
+	/*UPROPERTY(VisibleInstanceOnly, Category = Stat)
+	float MaxHp;*/
 
 	// 현재 체력
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHp;
+
+
+	// 현재 레벨
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	int32 CurrentLevel;
+
+	// 기본 스탯 데이터
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess= "true"))
+	FABCharacterStat BaseStat;
+	
+	// 아이템으로부터 획득한 부가 스탯 데이터
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess= "true"))
+	FABCharacterStat ModifierStat;
 };

@@ -149,4 +149,10 @@ protected:	// Item Section
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Weapon;
+
+
+public:
+	// state 섹션
+	int32 GetLevel() const;
+	void SetLevel(int32 InNewLevel);
 };

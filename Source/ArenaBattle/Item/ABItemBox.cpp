@@ -35,7 +35,7 @@ AABItemBox::AABItemBox()
 	
 	
 	// BeginOverlap 델리게이트에 함수 등록
-	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
+	// Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BoxMeshRef(TEXT("/Game/ArenaBattle/Environment/Props/SM_Env_Breakables_Box1.SM_Env_Breakables_Box1"));
 	if (BoxMeshRef.Object)
@@ -92,6 +92,9 @@ void AABItemBox::PostInitializeComponents()
 
 	// 제대로 설정됐는지 확인.
 	ensureAlways(Item);
+	
+	// 오버랩 델리게이트에 함수 등록
+	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
 }
 
 void AABItemBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

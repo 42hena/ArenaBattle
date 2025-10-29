@@ -179,7 +179,7 @@ void AABCharacterBase::ComboActionBegin()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
-		const float AttackSpeedRate = 1.0f;
+		const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
 		// Montage 재생 함수.
 		AnimInstance->Montage_Play(ComboActionMontage);
 
@@ -217,7 +217,8 @@ void AABCharacterBase::SetComboCheckTimer()
 	ensureAlways(ComboActionData->EffectiveFrameCount.IsValidIndex(ComboIndex));
 
 	UABComboActionData *Combo = ComboActionData;
-	const float AttackSpeedRate = 1.0f;
+	//const float AttackSpeedRate = 1.0f;
+	const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
 	// float ComboEffectTime = (ComboActionData->EffectiveFrameCount[ComboIndex] / ComboActionData->FrameRate / AttackSpeedRate);
 	float ComboEffectTime = (ComboActionData->EffectiveFrameCount[ComboIndex] / ComboActionData->FrameRate);
 
@@ -269,7 +270,7 @@ void AABCharacterBase::AttackHitCheck()
 
 	// 충돌 판정 시작 위치
 	FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
-	const float AttackRange = 50.0f;
+	const float AttackRange = Stat->GetTotalStat().AttackRange;
 
 	// 트레이스에 사용할 반지름 값.
 	const float AttackRadius = 50.0f;
@@ -289,7 +290,7 @@ void AABCharacterBase::AttackHitCheck()
 	if (HitDetected)
 	{
 		// 데미지 양
-		const float AttackDamage = 30.0f;
+		const float AttackDamage = Stat->GetTotalStat().Attack;
 
 		// 데미지 이벤트
 		FDamageEvent DamageEvent;
@@ -328,7 +329,7 @@ void AABCharacterBase::SetupCharacterWidget(UABUserWidget* InUserWidget)
 	if (HpBarWidget)
 	{
 		// 스탯 데이터의 기반으로 위젯에 값 설정.
-		HpBarWidget->SetMaxHp(Stat->GetMaxHp());
+		HpBarWidget->SetMaxHp(Stat->GetTotalStat().MaxHp);
 		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
 
 		// 델리게이트 연결
@@ -450,4 +451,14 @@ void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
 void AABCharacterBase::ReadScroll(UABItemData* InItemData)
 {
 	UE_LOG(LogTemp, Log, TEXT("ReadScroll"));
+}
+
+
+int32 AABCharacterBase::GetLevel() const
+{
+	return Stat->GetCurrentLevel();
+}
+void AABCharacterBase::SetLevel(int32 InNewLevel)
+{
+	Stat->SetLevelStat(InNewLevel);
 }
