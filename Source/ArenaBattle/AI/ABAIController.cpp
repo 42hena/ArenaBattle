@@ -5,6 +5,9 @@
 
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "ABAI.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AABAIController::AABAIController()
 {
@@ -29,6 +32,11 @@ void AABAIController::RunAI()
 	// 블랙보드 사용 설정.
 	if (UseBlackboard(BBAsset, BlackboardComponent))
 	{
+		// 시작할 때 NPC 폰이 생성된 위치를 HomePos에 저장.
+
+		FVector HomeLocation = GetPawn()->GetActorLocation();
+		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, HomeLocation);
+
 		// 행동트리 실행
 		bool Result = RunBehaviorTree(BTAsset);
 		
@@ -50,6 +58,7 @@ void AABAIController::StopAI()
 void AABAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
 
 	// 컨트롤러가 폰에 빙의하면 AI가 실행되도록 함수 호출.
 	// BT가 실행되면 Pawn이 영향을 받기 때문에 빙의 처리가 완료되어야 함.
