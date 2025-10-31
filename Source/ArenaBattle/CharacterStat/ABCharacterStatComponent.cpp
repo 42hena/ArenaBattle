@@ -15,21 +15,36 @@ UABCharacterStatComponent::UABCharacterStatComponent()
 
 	// 초기값 설정
 	//MaxHp = 200;
-	CurrentHp = BaseStat.MaxHp;
-	SetHp(CurrentHp);
+	/*CurrentHp = BaseStat.MaxHp;
+	SetHp(CurrentHp);*/
 	CurrentLevel = 1;
+	AttackRadius = 50.0f;
+
+	// 이것을 설정해야 InitializeComponent가 호출됨.
+	bWantsInitializeComponent = true;
 }
 
-
-// Called when the game starts
-void UABCharacterStatComponent::BeginPlay()
+// Beginplay 전에 호출.
+void UABCharacterStatComponent::InitializeComponent()
 {
-	Super::BeginPlay();
+	Super::InitializeComponent();
 
-	// ...
+	// 기본 스탯 데이터 로드
 	SetLevelStat(CurrentLevel);
+
+	// 스텟 데이터의 최대 체력으로 설정.
 	SetHp(BaseStat.MaxHp);
 }
+
+// Called when the game starts
+//void UABCharacterStatComponent::BeginPlay()
+//{
+//	Super::BeginPlay();
+//
+//	// ...
+//	SetLevelStat(CurrentLevel);
+//	SetHp(BaseStat.MaxHp);
+//}
 
 void UABCharacterStatComponent::SetLevelStat(int32 InNewLevel)
 {

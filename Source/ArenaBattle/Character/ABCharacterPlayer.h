@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Character/ABCharacterBase.h"
+#include "Interface/ABCharacterHUDInterface.h"
 #include "ABCharacterPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase
+class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase,
+	public IABCharacterHUDInterface
 {
 	GENERATED_BODY()
 	
@@ -19,6 +21,9 @@ public:	// 특수 맴버 함수
 
 public:
 	virtual void BeginPlay() override;
+
+
+	virtual void SetDead() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -74,4 +79,8 @@ protected:
 
 private:
 
+
+protected:
+	//
+	virtual void SetupHUDWidget(class UABHUDWidget* InHUDWidget) override;
 };

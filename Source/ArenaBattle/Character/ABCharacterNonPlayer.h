@@ -6,6 +6,7 @@
 #include "Character/ABCharacterBase.h"
 
 #include "Engine/StreamableManager.h"
+#include "Interface/ABCharacterAIInterface.h"
 
 #include "ABCharacterNonPlayer.generated.h"
 
@@ -13,7 +14,8 @@
  * 
  */
 UCLASS(config=ArenaBattle)
-class ARENABATTLE_API AABCharacterNonPlayer : public AABCharacterBase
+class ARENABATTLE_API AABCharacterNonPlayer : public AABCharacterBase,
+	public IABCharacterAIInterface
 {
 	GENERATED_BODY()
 public:
@@ -35,4 +37,20 @@ protected:
 
 	// 비동기로 요청한 메시 로드가 완료되면 호출될 콜백 함수.
 	void NPCMeshLoadCompleted();
+
+protected:
+	virtual float GetAIPatrolRadius() override;
+	virtual float GetAIDetectRange() override;
+	virtual float GetAIAttackRange() override;
+	virtual float GetAITurnSpeed() override;
+
+	virtual void AttackByAI() override;
+
+
+	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
+
+	virtual void NotifyComboActionEnd() override;
+
+	// SetAIAttackDelegate로 부터 전달된 델리게이트를 저장할 변수
+	FAICharacterAttackFinished OnAttackFinished;
 };

@@ -43,5 +43,4 @@ void UABHpBarWidget::NativeConstruct()
 	{
 		CharacterWidget->SetupCharacterWidget(this);
 	}
-
 }

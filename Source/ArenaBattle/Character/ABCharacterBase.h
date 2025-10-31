@@ -7,6 +7,7 @@
 #include "Interface/ABAnimationAttackInterface.h"
 #include "Interface/ABCharacterWidgetInterface.h"
 #include "Interface/ABCharacterItemInterface.h"
+#include "GameData/ABCharacterStat.h"
 #include "ABCharacterBase.generated.h"
 
 
@@ -60,6 +61,9 @@ protected:	// Combo Section
 
 	// 콤보 공격이 끝날 때 실행되는 함수
 	void ComboActionEnd(UAnimMontage* TargetMontage, bool Interrupted);
+
+	// NPC가 공격이 끝나는 지점을 알 수 있도록 가상 함수 추가.
+	virtual void NotifyComboActionEnd();
 
 	// 콤보 타이머 설정 함수
 	void SetComboCheckTimer();
@@ -155,4 +159,8 @@ public:
 	// state 섹션
 	int32 GetLevel() const;
 	void SetLevel(int32 InNewLevel);
+	
+	// 스탯이 변경되었을 때 델리게이트에 연결해 실행할 함수 // item -> 캐릭터 -> stat
+	void ApplyStat(const struct FABCharacterStat& BaseStat, const struct FABCharacterStat& ModifierStat);
+
 };

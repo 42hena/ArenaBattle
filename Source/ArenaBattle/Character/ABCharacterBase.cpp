@@ -20,6 +20,8 @@
 #include "Item/ABItemData.h"
 #include "Item/ABWeaponItemData.h"
 
+#include "Item/ABItems.h"
+
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
@@ -208,6 +210,14 @@ void AABCharacterBase::ComboActionEnd(UAnimMontage* TargetMontage, bool Interrup
 
 	// 몽타주 재생 끝나면 다시 무브먼트 모드 복구.
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	// 공격이 끝나면 NotifyComboActionEnd 함수 호출.
+	NotifyComboActionEnd();
+}
+
+void AABCharacterBase::NotifyComboActionEnd()
+{
+	// 이벤트 제공용도->필요한 애들이 구현하게 될거임.
 }
 
 void AABCharacterBase::SetComboCheckTimer()
@@ -273,7 +283,8 @@ void AABCharacterBase::AttackHitCheck()
 	const float AttackRange = Stat->GetTotalStat().AttackRange;
 
 	// 트레이스에 사용할 반지름 값.
-	const float AttackRadius = 50.0f;
+	//const float AttackRadius = 50.0f;
+	const float AttackRadius = Stat->GetAttackRadius();
 
 	// 프로파일링할 때 쓰는 거 Attack은...
 
@@ -343,6 +354,9 @@ void AABCharacterBase::PostInitializeComponents()
 
 	// 체력을 모두 소진했을 때 발행되는 델리게이트에 구독
 	Stat->OnHpZero.AddUObject(this, &AABCharacterBase::SetDead);
+
+	// 스탯이 변경됐을 때 발행되는 델리게이트에 구독
+	Stat->OnStatChanged.AddUObject(this, &AABCharacterBase::ApplyStat);
 }
 
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -464,4 +478,13 @@ int32 AABCharacterBase::GetLevel() const
 void AABCharacterBase::SetLevel(int32 InNewLevel)
 {
 	Stat->SetLevelStat(InNewLevel);
+}
+
+void AABCharacterBase::ApplyStat(const FABCharacterStat& BaseStat, const FABCharacterStat& ModifierStat)
+{
+	// 스탯 데이터에서 최종 이동 속력 구하기.
+	float MovementSpeed = (BaseStat + ModifierStat).MovementSpeed;
+
+	// 이동 속력을 캐릭터 무브먼트 컴포넌트에 적용.
+	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 }

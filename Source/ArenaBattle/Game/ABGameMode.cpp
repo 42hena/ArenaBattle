@@ -4,16 +4,18 @@
 #include "Game/ABGameMode.h"
 
 // #include "Player/ABPlayerController.h"
+#include "Character/ABCharacterPlayer.h"
 
 AABGameMode::AABGameMode()
 {
 	// Set Default Pawn Class 클래스일때는 타입 정보 지우기?
 	// static ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.BP_ThirdPersonCharacter_C"));
-	static ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(TEXT("/Script/Engine.Blueprint'/Game/ArenaBattle/Blueprint/BP_Character.BP_Character_C'"));
-	if (ThirdPersonClassRef.Succeeded())	// ThirdPersonClassRef.Class와 동일
-	{
-		DefaultPawnClass = ThirdPersonClassRef.Class;
-	}
+	//static ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(TEXT("/Script/Engine.Blueprint'/Game/ArenaBattle/Blueprint/BP_Character.BP_Character_C'"));
+	//if (ThirdPersonClassRef.Succeeded())	// ThirdPersonClassRef.Class와 동일
+	//{
+	//	DefaultPawnClass = ThirdPersonClassRef.Class;
+	//}
+	DefaultPawnClass = AABCharacterPlayer::StaticClass();
 
 	// 객체는 없고, 타입만 알고 있어서 이렇게 가져옴.
 	// PlayerControllerClass = AABPlayerController::StaticClass();

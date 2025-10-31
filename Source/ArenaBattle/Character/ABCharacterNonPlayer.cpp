@@ -5,6 +5,7 @@
 
 #include "Engine/AssetManager.h"
 #include "AI/ABAIController.h"
+#include "CharacterStat/ABCharacterStatComponent.h"
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
 {
@@ -33,9 +34,20 @@ void AABCharacterNonPlayer::PostInitializeComponents()
 		FStreamableDelegate::CreateUObject(this, &AABCharacterNonPlayer::NPCMeshLoadCompleted));
 }
 
+
 void AABCharacterNonPlayer::SetDead()
 {
 	Super::SetDead();
+
+	/*ABAIController* 
+		ABAIController* AB
+		GetController();*/
+
+	AABAIController* AIController = Cast< AABAIController>(GetController());
+	if (AIController)
+	{
+		AIController->StopAI();
+	}
 
 	// 타이머를 사용해서 일정 시간 이후에 삭제 처리
 	FTimerHandle DeadTimerHandle;
@@ -69,4 +81,45 @@ void AABCharacterNonPlayer::NPCMeshLoadCompleted()
 	}
 	// 모든 작업이 끝난 후 핸들 해제
 	NPCMeshHandle->ReleaseHandle();
+}
+
+float AABCharacterNonPlayer::GetAIPatrolRadius()
+{
+	return 500.0f;
+}
+
+float AABCharacterNonPlayer::GetAIDetectRange()
+{
+	return 400.0f;
+}
+
+float AABCharacterNonPlayer::GetAIAttackRange()
+{
+	// 캡슐 길이 구하는 공식 (====) 반지름 2개 + 길이
+	return Stat->GetTotalStat().AttackRange + Stat->GetAttackRadius() * 2;
+}
+
+float AABCharacterNonPlayer::GetAITurnSpeed()
+{
+	// 초당 회전 속도가 아님!
+	return 2.0f;
+}
+
+void AABCharacterNonPlayer::AttackByAI()
+{
+	// 공격 진행
+	ProcessComboCommand();
+}
+
+void AABCharacterNonPlayer::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
+{
+	OnAttackFinished = InOnAttackFinished;
+}
+
+void AABCharacterNonPlayer::NotifyComboActionEnd()
+{
+	Super::NotifyComboActionEnd();
+
+	// 공격이 끝나면 앞서 전달받았던 델리게이트 호출.
+	OnAttackFinished.ExecuteIfBound();
 }

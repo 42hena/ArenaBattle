@@ -19,6 +19,10 @@
 
 #include "InputActionValue.h"
 
+#include "UI/ABHUDWidget.h"
+
+#include "CharacterStat/ABCharacterStatComponent.h"
+
 
 AABCharacterPlayer::AABCharacterPlayer()
 {
@@ -117,8 +121,34 @@ AABCharacterPlayer::AABCharacterPlayer()
 void AABCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+
+	// 입력 활성화
+	// 죽었을 때 마우스 클릭 등 입력이 처리되지 않도록.
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		EnableInput(PlayerController);
+	}
+
 	
 	SetCharacterControl(CurrentCharacterType);
+}
+
+void AABCharacterPlayer::SetDead()
+{
+	Super::SetDead();
+
+	// 입력 비활성화
+	// 죽었을 때 마우스 클릭 등 입력이 처리되지 않도록.
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		DisableInput(PlayerController);
+	}
 }
 
 void AABCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -265,6 +295,24 @@ void AABCharacterPlayer::SetCharacterControlData(const UABCharacterControlData* 
 	SpringArm->bInheritPitch = InCharacterControlData->bInheritPitch;
 	SpringArm->bInheritYaw = InCharacterControlData->bInheritYaw;
 	SpringArm->bInheritRoll = InCharacterControlData->bInheritRoll;
+}
+
+void AABCharacterPlayer::SetupHUDWidget(UABHUDWidget* InHUDWidget)
+{
+	if (InHUDWidget)
+	{
+		// HUD에 기본 스탯 정보 설정
+		InHUDWidget->UpdateStat(Stat->GetBaseStat(), Stat->GetModifierStat());
+
+		// HP 정보 설정
+		InHUDWidget->UpdateHpBar(Stat->GetCurrentHp());
+
+		// 스탯 변경 델리게이트에 연결(바인딩)
+		Stat->OnStatChanged.AddUObject(InHUDWidget, &UABHUDWidget::UpdateStat);
+		
+		// HP 변경 델리게이트에 연결(바인딩)
+		Stat->OnHpChanged.AddUObject(InHUDWidget, &UABHUDWidget::UpdateHpBar);
+	}
 }
 
 

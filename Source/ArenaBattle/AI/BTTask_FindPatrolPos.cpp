@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ABAI.h"
+#include "Interface/ABCharacterAIInterface.h"
 
 UBTTask_FindPatrolPos::UBTTask_FindPatrolPos()
 {
@@ -32,11 +33,21 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	}
 
+	// AI 인터페이스로 형변환.
+	IABCharacterAIInterface* AIPawn = Cast< IABCharacterAIInterface>(ControllingPawn);
+	if (!AIPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
+
 	// 랜덤 위치를 선택해서 블랙보드에 저장
 	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(
 		BBKEY_HOMEPOS
 	);
 	FNavLocation NextPatrolPos;
+
+	// AIPawn에서 정찰 반경 값 얻어오기.
+	float PatrolRadius = AIPawn->GetAIPatrolRadius();
 
 	bool SelectPositionResult = NavSystem->GetRandomPointInNavigableRadius(Origin, 500.0f, NextPatrolPos);
 	// 랜덤 위치 선택에 성공했으면 블랙보드에 값 저장.

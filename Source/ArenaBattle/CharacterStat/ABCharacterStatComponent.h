@@ -16,6 +16,11 @@ DECLARE_MULTICAST_DELEGATE(FOnHpZeroDelegate);
 // 체력이 변경됐을 때 발행할 델리게이트
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float /* Current Hp */);
 
+// 체력이 변경됐을 때 발행할 델리게이트
+// DECLARE_MULTICAST_DELEGATE_TwoParams(FOnStatChangedDelegate, const FABCharacterStat&, /* BaseStat */ const FABCharacterStat& /* ModifierStat */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnStatChangedDelegate, const FABCharacterStat& /*BaseStat*/, const FABCharacterStat& /*ModifierStat*/);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARENABATTLE_API UABCharacterStatComponent : public UActorComponent
 {
@@ -26,18 +31,26 @@ public:
 	UABCharacterStatComponent();
 
 protected:
+	// 컴포넌트 초기화할 떄 호출되는 이벤트 함수.
+	virtual void InitializeComponent() override;
+
 	// Called when the game starts
-	virtual void BeginPlay() override;
+	//virtual void BeginPlay() override;
 
 public:	
 	// FORCEINLINE float GetMaxHp() const { return MaxHp; }
 	void SetLevelStat(int32 InNewLevel);
 	FORCEINLINE int32 GetCurrentLevel() const { return CurrentLevel; }
-	FORCEINLINE void SetModifierStat(const FABCharacterStat& InModifierStat)
-	{
-		ModifierStat = InModifierStat;
+	FORCEINLINE int32 GetAttackRadius() const { return AttackRadius; }
+
+	FORCEINLINE const FABCharacterStat& GetBaseStat() const { return BaseStat; }
+	FORCEINLINE void SetBaseStat(const FABCharacterStat& InBaseStat) { BaseStat = InBaseStat; OnStatChanged.Broadcast(BaseStat, ModifierStat); }
+	FORCEINLINE const FABCharacterStat& GetModifierStat() const { return ModifierStat; }
+	FORCEINLINE void SetModifierStat(const FABCharacterStat& InModifierStat) {
+		ModifierStat = InModifierStat; 
+		OnStatChanged.Broadcast(BaseStat, ModifierStat);
 	}
-	FORCEINLINE FABCharacterStat GetTotalStat() const { return FABCharacterStat(BaseStat + ModifierStat); }
+	FORCEINLINE FABCharacterStat GetTotalStat() const { return BaseStat + ModifierStat; }
 
 
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
@@ -53,6 +66,7 @@ public:
 	// 발행할 이벤트
 	FOnHpZeroDelegate OnHpZero;
 	FOnHpChangedDelegate OnHpChanged;
+	FOnStatChangedDelegate OnStatChanged;
 
 protected:
 	// 최대 체력
@@ -63,6 +77,9 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHp;
 
+	// 공격 범위
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float AttackRadius;
 
 	// 현재 레벨
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
@@ -75,4 +92,5 @@ protected:
 	// 아이템으로부터 획득한 부가 스탯 데이터
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess= "true"))
 	FABCharacterStat ModifierStat;
+
 };
