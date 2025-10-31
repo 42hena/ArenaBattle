@@ -6,6 +6,7 @@
 #include "Components/ProgressBar.h"
 
 #include "Interface/ABCharacterWidgetInterface.h"
+#include "Components/TextBlock.h"
 
 UABHpBarWidget::UABHpBarWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
@@ -18,6 +19,9 @@ UABHpBarWidget::UABHpBarWidget(const FObjectInitializer& ObjectInitializer) :
 
 void UABHpBarWidget::UpdateHpBar(float NewCurrentHp)
 {
+	// 현재 체력 값 업데이트.
+	CurrentHp = NewCurrentHp;
+
 	// 값 검증
 	ensureAlways(MaxHp > 0.0f);
 
@@ -26,6 +30,34 @@ void UABHpBarWidget::UpdateHpBar(float NewCurrentHp)
 	{
 		HpProgressBar->SetPercent(NewCurrentHp / MaxHp);
 	}
+
+	// HP 텍스트 업데이트
+	if (HpStat)
+	{
+		HpStat->SetText(FText::FromString(GetHpStatText()));
+	}
+}
+
+void UABHpBarWidget::UpdateStat(const FABCharacterStat& BaseStat, const FABCharacterStat& ModifierStat)
+{
+	// 최대 체력 업데이트
+	MaxHp = (BaseStat + ModifierStat).MaxHp;
+
+	// HP 상태 업데이트
+	if (HpProgressBar)
+	{
+		HpProgressBar->SetPercent(CurrentHp / MaxHp);
+	}
+	// HP 텍스트 업데이트
+	if (HpStat)
+	{
+		HpStat->SetText(FText::FromString(GetHpStatText()));
+	}
+}
+
+FString UABHpBarWidget::GetHpStatText()
+{
+	return FString::Printf(TEXT("%.0f / %.0f"), CurrentHp, MaxHp);
 }
 
 void UABHpBarWidget::NativeConstruct()
@@ -35,6 +67,9 @@ void UABHpBarWidget::NativeConstruct()
 	// 위젯 참조를 위한 코드 작성.
 	HpProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("PbHpBar")));
 	ensureAlways(HpProgressBar);
+
+	HpStat = Cast<UTextBlock>(GetWidgetFromName(TEXT("TxtHpStat")));
+	ensureAlways(HpStat);
 
 	// 인터페이스를 통해 캐릭터에 접근해서
 	// 초기화 요청

@@ -40,14 +40,15 @@ void UABHUDWidget::UpdateHpBar(float NewCurrentHp)
 	HpBar->UpdateHpBar(NewCurrentHp);
 }
 
-void UABHUDWidget::UpdateStat(const FABCharacterStat& BastStat, const FABCharacterStat& ModifierStat)
+void UABHUDWidget::UpdateStat(const FABCharacterStat& BaseStat, const FABCharacterStat& ModifierStat)
 {
 	// 최종 스탯 계산
-	FABCharacterStat TotalStat = BastStat + ModifierStat;
+	FABCharacterStat TotalStat = BaseStat + ModifierStat;
 	
 	// HpBar 업데이트
-	HpBar->SetMaxHp(TotalStat.MaxHp);
+	//HpBar->SetMaxHp(TotalStat.MaxHp);
+	HpBar->UpdateStat(BaseStat, ModifierStat);
 
 	// 캐릭터 스탯 UI에 새 데이터 전달
-	CharacterStat->UpdateStat(BastStat, ModifierStat);
+	CharacterStat->UpdateStat(BaseStat, ModifierStat);
 }

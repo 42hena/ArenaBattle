@@ -28,6 +28,8 @@ AABCharacterBase::AABCharacterBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+
 	// 컴포넌트 설정
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_ABCAPSULE);
 
@@ -340,11 +342,15 @@ void AABCharacterBase::SetupCharacterWidget(UABUserWidget* InUserWidget)
 	if (HpBarWidget)
 	{
 		// 스탯 데이터의 기반으로 위젯에 값 설정.
-		HpBarWidget->SetMaxHp(Stat->GetTotalStat().MaxHp);
+		//HpBarWidget->SetMaxHp(Stat->GetTotalStat().MaxHp);
+		HpBarWidget->UpdateStat(Stat->GetBaseStat(), Stat->GetModifierStat());
+
 		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
 
 		// 델리게이트 연결
 		Stat->OnHpChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateHpBar);
+
+		Stat->OnStatChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateStat);
 	}
 }
 
@@ -462,12 +468,26 @@ void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
 
 void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
 {
-	UE_LOG(LogTemp, Log, TEXT("DrinkPotion"));
+	// UE_LOG(LogTemp, Log, TEXT("DrinkPotion"));
+	
+	// 처리를 위해 포션 아이템 데이터로 변환 후 체력 회복 요청
+	UABPotionItemData* PotionItemData = Cast< UABPotionItemData>(InItemData);
+	if (PotionItemData)
+	{
+		Stat->HealHp(PotionItemData->HealAmount);
+	}
 }
 
 void AABCharacterBase::ReadScroll(UABItemData* InItemData)
 {
-	UE_LOG(LogTemp, Log, TEXT("ReadScroll"));
+	//UE_LOG(LogTemp, Log, TEXT("ReadScroll"));
+
+	// 스크롤 아이템 타입으로 형 변환 후 처리 요청.
+	UABScrollItemData* ScrollItemData = Cast<UABScrollItemData>(InItemData);
+	if (ScrollItemData)
+	{
+		Stat->AddBaseStat(ScrollItemData->BaseStat);
+	}
 }
 
 
